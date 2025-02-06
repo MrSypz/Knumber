@@ -15,7 +15,7 @@ public final class ParticleUtil {
         ClientWorld world = client.world;
         if (world == null || !world.isClient()) return;
 
-        Vec3d particlePos = target.getPos().add(0.0, target.getHeight() + 0.45 + yPos, 0.0);
+        Vec3d particlePos = target.getPos().add(0.0, target.getHeight() + 0.95 + yPos, 0.0);
         TextParticle particle = new TextParticle(world, particlePos.x, particlePos.y, particlePos.z);
         particle.setText(text);
         particle.setColor(color.getRed(), color.getGreen(), color.getBlue());
