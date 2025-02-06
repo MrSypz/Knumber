@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "knumber",
+  "version": "${version}",
+  "name": "Knumber",
+  "description": "A specialized module of Penomior focused on animated damage indicators. This module displays customizable text and number particles above entities with smooth animations. Features include damage numbers, critical hit indicators, miss notifications, and back attack",
+
+  "authors": [],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "icon": "assets/knumber/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "sypztep.knumber.client.KnumberClient"
+    ],
+    "main": [
+      "sypztep.knumber.Knumber"
+    ],
+    "modmenu": [
+      "sypztep.knumber.client.compat.ModMenuIntegration"
+    ]
+  },
+  "mixins": [
+    "knumber.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
