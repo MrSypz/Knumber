@@ -52,7 +52,7 @@ public abstract class LivingEntityMixin {
         } else if (oldHealth != newHealth && Math.abs(damage) != entity.getMaxHealth() && damage < 0) {
             previousHealth = newHealth;
             String health = String.format("%.2f", damage * -1);
-            ParticleUtil.spawnTextParticle(entity, Text.of("+ " + health), new Color(0, 255, 0), -0.055f, -0.6f);
+            ParticleUtil.spawnTextParticle(entity, Text.of("+ " + health), new Color(40, 255, 40), -0.055f, -0.6f);
         }
     }
 }

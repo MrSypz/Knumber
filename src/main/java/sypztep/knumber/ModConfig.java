@@ -16,6 +16,9 @@ public class ModConfig implements ConfigData {
     public static boolean damageNumberIndicator = true;
 
     @ConfigEntry.Category("feature-client")
+    public static boolean flickParticle = true;
+
+    @ConfigEntry.Category("feature-client")
     @ConfigEntry.ColorPicker()
     public static int normalDamageColor = 0xD43333;
 
