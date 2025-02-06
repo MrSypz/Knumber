@@ -4,6 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,55 +24,35 @@ public abstract class LivingEntityMixin {
     @Shadow public abstract @Nullable DamageSource getRecentDamageSource();
 
     @Unique private float previousHealth;
-    @Unique private static final float HEALTH_THRESHOLD = 0.01f;
 
     @Inject(method = "tick()V", at = @At("TAIL"))
     private void damageNumberIndicator(CallbackInfo info) {
         if (!ModConfig.damageNumberIndicator) return;
+
         LivingEntity entity = (LivingEntity) (Object) this;
+
         var world = entity.getWorld();
         if (world == null || !world.isClient()) return;
 
         if (previousHealth == 0) {
             previousHealth = entity.getHealth();
-            return;
         }
 
-
+        float oldHealth = previousHealth;
         float newHealth = entity.getHealth();
-        float damage = previousHealth - newHealth;
-
-        if (Math.abs(damage) < HEALTH_THRESHOLD) return;
+        float damage = oldHealth - newHealth;
 
         DamageSource source = this.getRecentDamageSource();
-        if (source == null) return;
 
-        if (damage > 0 && damage != entity.getMaxHealth()) {
-            displayDamageNumber(entity, damage, source);
-        } else if (damage < 0 && Math.abs(damage) != entity.getMaxHealth()) {
-            displayHealNumber(entity, Math.abs(damage));
+        assert source != null;
+        if (oldHealth != newHealth && Math.abs(damage) != entity.getMaxHealth() && damage >= 0 && source != null) {
+            previousHealth = newHealth;
+            String health = String.format("%.2f", damage);
+            ParticleUtil.spawnTextParticle(entity, Text.of(health), new Color(ModConfig.normalDamageColor), -0.055f, -0.6f);
+        } else if (oldHealth != newHealth && Math.abs(damage) != entity.getMaxHealth() && damage < 0) {
+            previousHealth = newHealth;
+            String health = String.format("%.2f", damage * -1);
+            ParticleUtil.spawnTextParticle(entity, Text.of("+ " + health), new Color(0, 255, 0), -0.055f, -0.6f);
         }
-
-        previousHealth = newHealth;
-    }
-
-    @Unique
-    private void displayDamageNumber(LivingEntity entity, float damage, DamageSource source) {
-        ParticleUtil.createParticle(entity)
-                .setText(Text.of(String.format("%.2f", damage)))
-                .setColor(new Color(ModConfig.normalDamageColor))
-                .setMaxSize(-0.055f)
-                .setYOffset(-0.6f)
-                .spawn();
-    }
-
-    @Unique
-    private void displayHealNumber(LivingEntity entity, float healing) {
-        ParticleUtil.createParticle(entity)
-                .setText(Text.of("+ " + String.format("%.2f", healing)))
-                .setColor(new Color(0, 255, 0))
-                .setMaxSize(-0.055f)
-                .setYOffset(-0.6f)
-                .spawn();
     }
 }
