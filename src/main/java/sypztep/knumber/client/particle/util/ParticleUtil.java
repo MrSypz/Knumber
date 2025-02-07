@@ -8,23 +8,12 @@ import net.minecraft.util.math.Vec3d;
 import sypztep.knumber.client.particle.TextParticle;
 
 import java.awt.*;
-import java.util.Map;
-import java.util.WeakHashMap;
 
 public final class ParticleUtil {
-    private static final int PARTICLE_COOLDOWN = 5; // Ticks between particle spawns
-    private static final Map<Entity, Integer> lastParticleTime = new WeakHashMap<>();
-
     private static void spawnParticle(Entity target, String text, Color color, float maxSize, float yPos) {
         MinecraftClient client = MinecraftClient.getInstance();
         ClientWorld world = client.world;
         if (world == null || !world.isClient()) return;
-
-        int currentTick = (int) client.world.getTime();
-        int lastSpawn = lastParticleTime.getOrDefault(target, 0);
-        if (currentTick - lastSpawn < PARTICLE_COOLDOWN) return;
-
-        lastParticleTime.put(target, currentTick);
 
         Vec3d particlePos = target.getPos().add(0.0, target.getHeight() + 0.95 + yPos, 0.0);
         TextParticle particle = new TextParticle(world, particlePos.x, particlePos.y, particlePos.z);
