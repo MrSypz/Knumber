@@ -23,7 +23,7 @@ public final class TextParticle extends Particle {
     private static final int NORMAL_GROW = 10;
     private static final int NORMAL_SHRINK = 10;
     private static final float VELOCITY_DAMPEN = 0.9f;
-    private static final float FADE_AMOUNT = 0.8f;
+    private static final float FADE_AMOUNT = 0.2f;
 
     private String text;
     private float scale;
