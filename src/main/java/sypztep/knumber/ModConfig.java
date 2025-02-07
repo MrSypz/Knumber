@@ -29,4 +29,5 @@ public class ModConfig implements ConfigData {
     @ConfigEntry.Category("feature-client")
     @ConfigEntry.ColorPicker()
     public static int trueDamageColor = 0x8A2BE2; // Purple color code
+
 }
