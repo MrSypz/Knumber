@@ -8,24 +8,20 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
-import sypztep.knumber.ModConfig;
-import sypztep.knumber.client.particle.util.ParticleUtil;
-
-import java.awt.*;
+import sypztep.knumber.client.particle.util.TextParticleProvider;
 
 public record AddTextParticlesPayload(int entityId,int selector) implements CustomPayload {
     public static final Id<AddTextParticlesPayload> ID = CustomPayload.id("add_text_particle");
     public static final PacketCodec<PacketByteBuf, AddTextParticlesPayload> CODEC = PacketCodec.tuple(
             PacketCodecs.VAR_INT,
             AddTextParticlesPayload::entityId,
-            PacketCodecs.UNSIGNED_SHORT,
+            PacketCodecs.UNSIGNED_SHORT, // size 0-65,535
             AddTextParticlesPayload::selector,
             AddTextParticlesPayload::new
     );
 
-    public static void send(ServerPlayerEntity player, int entityId, TextParticle selector) {
-        ServerPlayNetworking.send(player, new AddTextParticlesPayload(entityId, selector.flag));
+    public static void send(ServerPlayerEntity player, int entityId, TextParticleProvider selector) {
+        ServerPlayNetworking.send(player, new AddTextParticlesPayload(entityId, selector.getFlag()));
     }
 
     @Override
@@ -36,24 +32,13 @@ public record AddTextParticlesPayload(int entityId,int selector) implements Cust
         @Override
         public void receive(AddTextParticlesPayload payload, ClientPlayNetworking.Context context) {
             Entity entity = context.player().getWorld().getEntityById(payload.entityId());
-            int selector = payload.selector();
             if (entity != null) {
-                if (selector == TextParticle.MISSING.flag && ModConfig.missingIndicator)
-                    ParticleUtil.spawnTextParticle(entity, Text.translatable("penomior.text.missing"));
-                if (selector == TextParticle.BACKATTACK.flag && ModConfig.damageIndicator)
-                    ParticleUtil.spawnTextParticle(entity, Text.translatable("penomior.text.back"),new Color(1f,1f,1f),-0.045f,0.15f);
-                if (selector == TextParticle.CRITICAL.flag && ModConfig.damageIndicator)
-                    ParticleUtil.spawnTextParticle(entity, Text.translatable("penomior.text.critical"),new Color(1.0f, 0.310f, 0.0f), -0.055f,-0.275f);
+                try {
+                    TextParticleProvider.handleParticle(entity, payload.selector());
+                } catch (NoSuchFieldException | IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
             }
-        }
-    }
-    public enum TextParticle {
-        MISSING(0),
-        BACKATTACK(1),
-        CRITICAL(2);
-        private final int flag;
-        TextParticle(int flag) {
-            this.flag = flag;
         }
     }
 }

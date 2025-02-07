@@ -4,29 +4,45 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.registry.tag.DamageTypeTags;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import sypztep.knumber.ModConfig;
 import sypztep.knumber.client.particle.util.ParticleUtil;
+import sypztep.knumber.client.payload.DamageNumberPayload;
 
 import java.awt.*;
 
 @Mixin(LivingEntity.class)
 @Environment(EnvType.CLIENT)
 public abstract class LivingEntityMixin {
-    @Shadow public abstract @Nullable DamageSource getRecentDamageSource();
+    @Unique
+    private final Color HEALTH_COLOR = new Color(40, 255, 40);
+    @Unique
+    private float previousHealth;
 
-    @Unique private float previousHealth;
+    @Inject(method = "damage", at = @At("RETURN"))
+    private void sendDamageNumber(ServerWorld world, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        if (!cir.getReturnValue()) return;
+
+        LivingEntity entity = (LivingEntity)(Object)this;
+        if (entity.getWorld().isClient()) return;
+
+
+        for (ServerPlayerEntity player : world.getPlayers())
+            if (player.canSee(entity)) DamageNumberPayload.send(player, entity.getId(), amount);
+             else return;
+    }
+
 
     @Inject(method = "tick()V", at = @At("TAIL"))
-    private void damageNumberIndicator(CallbackInfo info) {
+    private void healing(CallbackInfo info) {
         if (!ModConfig.damageNumberIndicator) return;
 
         LivingEntity entity = (LivingEntity) (Object) this;
@@ -36,23 +52,18 @@ public abstract class LivingEntityMixin {
 
         if (previousHealth == 0) {
             previousHealth = entity.getHealth();
+            return;
         }
 
-        float oldHealth = previousHealth;
         float newHealth = entity.getHealth();
-        float damage = oldHealth - newHealth;
+        float healthDiff = newHealth - previousHealth;
 
-        DamageSource source = this.getRecentDamageSource();
-
-        assert source != null;
-        if (oldHealth != newHealth && Math.abs(damage) != entity.getMaxHealth() && damage >= 0 && source != null) {
+        if (healthDiff > 0 && healthDiff != entity.getMaxHealth()) {
             previousHealth = newHealth;
-            String health = String.format("%.2f", damage);
-            ParticleUtil.spawnTextParticle(entity, Text.of(health), new Color(ModConfig.normalDamageColor), -0.055f, -0.6f);
-        } else if (oldHealth != newHealth && Math.abs(damage) != entity.getMaxHealth() && damage < 0) {
+            String healText = String.format("%.2f", healthDiff);
+            ParticleUtil.spawnTextParticle(entity, Text.of("❤ " + healText), HEALTH_COLOR, -0.055f, -0.6f);
+        } else {
             previousHealth = newHealth;
-            String health = String.format("%.2f", damage * -1);
-            ParticleUtil.spawnTextParticle(entity, Text.of("+ " + health), new Color(40, 255, 40), -0.055f, -0.6f);
         }
     }
 }

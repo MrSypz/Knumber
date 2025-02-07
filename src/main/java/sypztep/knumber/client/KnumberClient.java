@@ -7,6 +7,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.util.Identifier;
 import sypztep.knumber.ModConfig;
 import sypztep.knumber.client.payload.AddTextParticlesPayload;
+import sypztep.knumber.client.payload.DamageNumberPayload;
 
 public class KnumberClient implements ClientModInitializer {
     public static final String MODID = "knumber";
@@ -21,5 +22,6 @@ public class KnumberClient implements ClientModInitializer {
         config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
 
         ClientPlayNetworking.registerGlobalReceiver(AddTextParticlesPayload.ID, new AddTextParticlesPayload.Receiver());
+        ClientPlayNetworking.registerGlobalReceiver(DamageNumberPayload.ID, new DamageNumberPayload.Receiver());
     }
 }
