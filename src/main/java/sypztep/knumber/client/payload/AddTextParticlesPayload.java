@@ -33,11 +33,7 @@ public record AddTextParticlesPayload(int entityId,int selector) implements Cust
         public void receive(AddTextParticlesPayload payload, ClientPlayNetworking.Context context) {
             Entity entity = context.player().getWorld().getEntityById(payload.entityId());
             if (entity != null) {
-                try {
-                    TextParticleProvider.handleParticle(entity, payload.selector());
-                } catch (NoSuchFieldException | IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
+                TextParticleProvider.handleParticle(entity, payload.selector());
             }
         }
     }
