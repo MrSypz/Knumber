@@ -12,7 +12,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import sypztep.knumber.ModConfig;
 import sypztep.knumber.client.particle.util.ParticleUtil;
 import sypztep.knumber.client.payload.DamageNumberPayload;
@@ -27,10 +26,8 @@ public abstract class LivingEntityMixin {
     @Unique
     private float previousHealth;
 
-    @Inject(method = "damage", at = @At("RETURN"))
-    private void sendDamageNumber(ServerWorld world, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        if (!cir.getReturnValue()) return;
-
+    @Inject(method = "applyDamage", at = @At("RETURN"))
+    private void sendDamageNumber(ServerWorld world, DamageSource source, float amount, CallbackInfo ci) {
         LivingEntity entity = (LivingEntity)(Object)this;
         if (entity.getWorld().isClient()) return;
 
