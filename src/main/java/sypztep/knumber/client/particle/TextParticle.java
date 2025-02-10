@@ -17,6 +17,8 @@ import sypztep.knumber.client.particle.util.Easing;
 
 import java.awt.*;
 
+import static java.lang.Math.clamp;
+
 public final class TextParticle extends Particle {
     private static final int FLICK_DURATION = 12;
     private static final int FADE_DURATION = 10;
@@ -50,13 +52,13 @@ public final class TextParticle extends Particle {
 
     @Override
     public void setColor(float red, float green, float blue) {
-        super.setColor(red, green, blue);
+        super.setColor(clamp(red, 0.0f, 1.0f), clamp(green, 0.0f, 1.0f), clamp(blue, 0.0f, 1.0f));
     }
 
     public void setColor(int red, int green, int blue) {
-        this.targetRed = red / 255.0f;
-        this.targetGreen = green / 255.0f;
-        this.targetBlue = blue / 255.0f;
+        this.targetRed = clamp(red / 255.0f, 0.0f, 1.0f);
+        this.targetGreen = clamp(green / 255.0f, 0.0f, 1.0f);
+        this.targetBlue = clamp(blue / 255.0f, 0.0f, 1.0f);
         if (ModConfig.flickParticle) {
             super.setColor(1.0f, 1.0f, 1.0f); // Start white for flick effect
         } else {
