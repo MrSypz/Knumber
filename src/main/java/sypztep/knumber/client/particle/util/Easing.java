@@ -65,15 +65,4 @@ public abstract class Easing {
             return a * (float) Math.pow(2, -10 * t) * (float) Math.sin((t * d - s) * (2 * Math.PI) / p) + c + b;
         }
     }
-    public static float bounceOut(float t) {
-        if (t < (1/2.75f)) {
-            return 7.5625f*t*t;
-        } else if (t < (2/2.75f)) {
-            return 7.5625f*(t-=(1.5f/2.75f))*t + .75f;
-        } else if (t < (2.5/2.75)) {
-            return 7.5625f*(t-=(2.25f/2.75f))*t + .9375f;
-        } else {
-            return 7.5625f*(t-=(2.625f/2.75f))*t + .984375f;
-        }
-    }
 }

@@ -17,15 +17,13 @@ import sypztep.knumber.client.particle.util.Easing;
 
 import java.awt.*;
 
-import static java.lang.Math.clamp;
-
 public final class TextParticle extends Particle {
     private static final int FLICK_DURATION = 12;
     private static final int FADE_DURATION = 10;
     private static final int NORMAL_GROW = 10;
     private static final int NORMAL_SHRINK = 10;
     private static final float VELOCITY_DAMPEN = 0.9f;
-    private static final float FADE_AMOUNT = 0.9f;
+    private static final float FADE_AMOUNT = 0.1f;
 
     private String text;
     private float scale;
@@ -34,16 +32,18 @@ public final class TextParticle extends Particle {
     private float targetRed;
     private float targetGreen;
     private float targetBlue;
+    private float targetAlpha;
 
     public TextParticle(ClientWorld world, double x, double y, double z) {
         super(world, x, y, z);
-        this.maxAge = 20;
+        this.maxAge = 25;
         this.scale = 0.0F;
         this.maxSize = -0.045F;
         this.gravityStrength = -0.125f;
         this.targetRed = this.red;
         this.targetGreen = this.green;
         this.targetBlue = this.blue;
+        this.targetAlpha = this.alpha;
     }
 
     public void setMaxSize(float maxSize) {
@@ -66,36 +66,49 @@ public final class TextParticle extends Particle {
         }
     }
 
+    public void setAlpha(float alpha) {
+        this.targetAlpha = clamp(alpha, 0.0f, 1.0f);
+    }
+
+    private float clamp(float value, float min, float max) {
+        return Math.max(min, Math.min(max, value));
+    }
+
+
     @Override
     public void tick() {
         if (ModConfig.flickParticle) {
             if (this.age++ <= FLICK_DURATION) {
-                float progress = age / (float)FLICK_DURATION;
+                float progress = age / (float) FLICK_DURATION;
                 setColor(
                         MathHelper.lerp(progress, 1.0f, targetRed),
                         MathHelper.lerp(progress, 1.0f, targetGreen),
                         MathHelper.lerp(progress, 1.0f, targetBlue)
                 );
                 this.scale = MathHelper.lerp(ELASTIC_OUT.ease(progress, 0.0F, 1.0F, 1.0F), 0.0F, this.maxSize);
+                this.alpha = MathHelper.lerp(progress, 1.0f, targetAlpha);
             } else if (this.age <= this.maxAge) {
-                float progress = (age - FLICK_DURATION) / (float)FADE_DURATION;
+                float progress = (age - FLICK_DURATION) / (float) FADE_DURATION;
                 setColor(
                         targetRed * (1f - progress * FADE_AMOUNT),
                         targetGreen * (1f - progress * FADE_AMOUNT),
                         targetBlue * (1f - progress * FADE_AMOUNT)
                 );
                 this.scale = MathHelper.lerp(progress, this.maxSize, 0.0f);
+                this.alpha = MathHelper.lerp(progress, targetAlpha, 0.0f);
             } else {
                 this.markDead();
             }
             this.velocityY *= VELOCITY_DAMPEN;
         } else {
             if (this.age++ <= NORMAL_GROW) {
-                float progress = age / (float)NORMAL_GROW;
+                float progress = age / (float) NORMAL_GROW;
                 this.scale = MathHelper.lerp(ELASTIC_OUT.ease(progress, 0.0F, 1.0F, 1.0F), 0.0F, this.maxSize);
+                this.alpha = targetAlpha;
             } else if (this.age <= this.maxAge) {
-                float progress = (age - NORMAL_GROW) / (float)NORMAL_SHRINK;
+                float progress = (age - NORMAL_GROW) / (float) NORMAL_SHRINK;
                 this.scale = MathHelper.lerp(progress, this.maxSize, 0.0f);
+                this.alpha = MathHelper.lerp(progress, targetAlpha, 0.0f);
             } else {
                 this.markDead();
             }
@@ -126,11 +139,12 @@ public final class TextParticle extends Particle {
                 .scale(scale, scale, scale);
 
         Vector3f offset = new Vector3f(0.0f, 0.0f, 0.03f);
-        int textColor = new Color(red, green, blue, alpha).getRGB();
+        int textColor = new Color(clamp(red, 0.0f, 1.0f), clamp(green, 0.0f, 1.0f), clamp(blue, 0.0f, 1.0f), clamp(alpha, 0.1f, 1.0f)).getRGB(); // Ensure alpha does not go below 0.1
+        int textBorderColor = new Color(clamp(red, 0.0f, 0.0f), clamp(green, 0.0f, 0.0f), clamp(blue, 0.0f, 0.0f), clamp(alpha, 0.1f, 1.0f)).getRGB(); // Ensure alpha does not go below 0.1
 
-        for(int[] pos : new int[][]{{1,0}, {-1,0}, {0,1}, {0,-1}}) {
+        for (int[] pos : new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) {
             matrix.translate(offset);
-            textRenderer.draw(text, textX + pos[0], pos[1], 0, false, matrix,
+            textRenderer.draw(text, textX + pos[0], pos[1], textBorderColor, false, matrix,
                     vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, 0xF000F0);
         }
 
