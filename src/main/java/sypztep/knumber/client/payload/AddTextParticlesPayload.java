@@ -8,10 +8,11 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.server.network.ServerPlayerEntity;
+import sypztep.knumber.client.KnumberClient;
 import sypztep.knumber.client.particle.util.TextParticleProvider;
 
 public record AddTextParticlesPayload(int entityId,int selector) implements CustomPayload {
-    public static final Id<AddTextParticlesPayload> ID = CustomPayload.id("add_text_particle");
+    public static final Id<AddTextParticlesPayload> ID = new Id<>(KnumberClient.id("add_text_particle"));
     public static final PacketCodec<PacketByteBuf, AddTextParticlesPayload> CODEC = PacketCodec.tuple(
             PacketCodecs.VAR_INT,
             AddTextParticlesPayload::entityId,
