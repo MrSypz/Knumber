@@ -4,7 +4,7 @@
   "text.autoconfig.knumber.option.damageNumberIndicator": "Damage Number",
   "text.autoconfig.knumber.option.flickParticle": "Flick Particle",
   "text.autoconfig.knumber.option.healIcon": "Heal Icon",
-  "text.autoconfig.knumber.option.damageIcon": "Critical Damage Color",
+  "text.autoconfig.knumber.option.damageIcon": "Damage Icon",
   "text.autoconfig.knumber.option.healingColor": "Heal Color",
   "text.autoconfig.knumber.option.normalDamageColor": "Physical Damage Color"
 }
