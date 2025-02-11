@@ -18,11 +18,11 @@ public final class ModConfig implements ConfigData {
     public static boolean flickParticle = true;
 
     @ConfigEntry.Category("feature-client")
-    @Comment("For the icon when player healing (default : ❤ )")
+    @Comment("For the icon when player healing (default : ❤ ) disable by empty this field")
     public static String healIcon = "❤ ";
 
     @ConfigEntry.Category("feature-client")
-    @Comment("For the icon when player taking damage (default : ✖ )")
+    @Comment("For the icon when player taking damage (default : ✖ ) disable by empty this field")
     public static String damageIcon = "✖ ";
 
     @ConfigEntry.Category("feature-client")

@@ -33,18 +33,19 @@ public abstract class LivingEntityMixin {
 
         float newHealth = entity.getHealth();
         float healthDiff = newHealth - previousHealth;
+        previousHealth = newHealth;
+
+        // Handle damage
         if (healthDiff < 0) {
-            previousHealth = newHealth;
             String damageText = String.format("%.2f", -healthDiff);
             ParticleUtil.spawnTextParticle(entity, Text.of(ModConfig.damageIcon + damageText), new Color(ModConfig.normalDamageColor), -0.055f, -0.6f);
             return;
         }
+
+        // Handle healing (and full health reset)
         if (healthDiff > 0 && healthDiff != entity.getMaxHealth()) {
-            previousHealth = newHealth;
             String healText = String.format("%.2f", healthDiff);
             ParticleUtil.spawnTextParticle(entity, Text.of(ModConfig.healIcon + healText), new Color(ModConfig.healingColor), -0.055f, -0.6f);
-        } else {
-            previousHealth = newHealth;
         }
     }
 }
