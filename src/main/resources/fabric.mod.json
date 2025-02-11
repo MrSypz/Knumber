@@ -16,9 +16,6 @@
     "client": [
       "sypztep.knumber.client.KnumberClient"
     ],
-    "main": [
-      "sypztep.knumber.Knumber"
-    ],
     "modmenu": [
       "sypztep.knumber.client.compat.ModMenuIntegration"
     ]
