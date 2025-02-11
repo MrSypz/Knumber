@@ -3,7 +3,8 @@
   "text.autoconfig.knumber.category.feature-client": "Client Feature Config",
   "text.autoconfig.knumber.option.damageNumberIndicator": "Damage Number",
   "text.autoconfig.knumber.option.flickParticle": "Flick Particle",
-  "text.autoconfig.knumber.option.normalDamageColor": "Physical Damage Color",
-  "text.autoconfig.knumber.option.magicDamageColor": "Magic Damage Color",
-  "text.autoconfig.knumber.option.trueDamageColor": "True Damage Color"
+  "text.autoconfig.knumber.option.healIcon": "Heal Icon",
+  "text.autoconfig.knumber.option.damageIcon": "Critical Damage Color",
+  "text.autoconfig.knumber.option.healingColor": "Heal Color",
+  "text.autoconfig.knumber.option.normalDamageColor": "Physical Damage Color"
 }
