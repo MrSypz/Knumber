@@ -116,12 +116,8 @@ public final class TextParticle extends Particle {
         super.tick();
     }
 
-    public void setText(@NotNull String text) {
-        this.text = text;
-    }
-
     @Override
-    public void render(VertexConsumer vertexConsumer, Camera camera, float tickDelta) {
+    public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float tickDelta) {
         Vec3d cameraPos = camera.getPos();
         float particleX = (float) (prevPosX + (x - prevPosX) * tickDelta - cameraPos.x);
         float particleY = (float) (prevPosY + (y - prevPosY) * tickDelta - cameraPos.y);
@@ -154,11 +150,8 @@ public final class TextParticle extends Particle {
 
         vertexConsumers.draw();
     }
-
-    @Override
-    public void renderCustom(MatrixStack matrices, VertexConsumerProvider vertexConsumers, Camera camera, float tickDelta) {
-        VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getTranslucent());
-        render(vertexConsumer, camera, tickDelta);
+    public void setText(@NotNull String text) {
+        this.text = text;
     }
 
     @Override
