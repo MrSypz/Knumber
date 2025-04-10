@@ -123,9 +123,9 @@ public final class TextParticle extends Particle {
     @Override
     public void render(VertexConsumer vertexConsumer, Camera camera, float tickDelta) {
         Vec3d cameraPos = camera.getPos();
-        float particleX = (float) (prevPosX + (x - prevPosX) * tickDelta - cameraPos.x);
-        float particleY = (float) (prevPosY + (y - prevPosY) * tickDelta - cameraPos.y);
-        float particleZ = (float) (prevPosZ + (z - prevPosZ) * tickDelta - cameraPos.z);
+        float particleX = (float) (lastX + (x - lastX) * tickDelta - cameraPos.x);
+        float particleY = (float) (lastY + (y - lastY) * tickDelta - cameraPos.y);
+        float particleZ = (float) (lastZ + (z - lastZ) * tickDelta - cameraPos.z);
 
         MinecraftClient client = MinecraftClient.getInstance();
         TextRenderer textRenderer = client.textRenderer;
